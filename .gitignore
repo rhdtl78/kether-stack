@@ -1,0 +1,23 @@
+# Local OS/editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Dependencies and generated outputs
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Local credentials and runtime state
+.env
+.env.*
+!.env.example
+auth.json
+*.pem
+*.key
+.hermes/
+*.db
+*.db-shm
+*.db-wal
+*.log
