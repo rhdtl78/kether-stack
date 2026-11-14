@@ -24,17 +24,23 @@
 
 설치 번들의 정적 존재와 소스 읽기까지 확인했으며 실제 UI·원격 입력·승인 격리 성공 증거는 없다. CDP 9222는 응답하지 않았고 앱을 재시작하지 않았다.
 
-## 구현 방향 — 아직 미승인
+## 승인 상태 — 지정 worktree 개발·로컬 검증 승인
+
+최신 사용자 승인과 bootstrap handoff를 기준으로 초기 구성의 첫 commit/push는 완료되었고, `/Users/kether/projects/.worktrees/kether-stack/feature/multi-machine-workspace`에서 플러그인 개발과 로컬 검증이 승인되었다. 과거의 “아직 미승인” 문구는 현재 상태가 아니다. 이 승인은 **최초 구성 commit/push만** 포함하며 후속 구현 commit/push/merge 권한으로 확대하지 않는다.
+
+실사용 설치·활성화, 앱 적용·재시작, 원격 머신 변경·실행, 실제 메시지·승인 전송은 제외한다. AGENTS.md의 과거 승인 문구는 bootstrap 때 보호 정책으로 갱신이 거부되어 보존되었다. 이를 우회하지 않는다.
+
+## 구현 방향 — 공개 계약 안에서 개발
 
 통합 트리는 이 플러그인에서 구현한다. 기존 연결 풀·인증·세션 renderer·탭·분할을 재사용한다. profileRoutes descriptor 전체를 보존하고 cache 및 row key에 owner scope를 포함한다. tree preview를 전체 세션 목록으로 오표시하지 않는다.
 
-SDK 경계나 동일 stored id의 탭 충돌이 실제로 재현되면 필요한 앱 보강 범위를 별도로 승인받는다. 일반 세션을 Bot Mode로 위장하거나 비밀을 읽어 우회하지 않는다.
+독립 exact-build 검토는 [SDK-BOUNDARIES.md](SDK-BOUNDARIES.md)를 따른다. 일반 Sessions 새 탭의 ownerRoute 전달 seam과 동일 stored ID의 코어 탭 충돌은 플러그인 row key만으로 해결되지 않는다. 소유권 모호함은 안전하게 차단하고, 완전 동시 열기에 필요한 앱 보강은 별도 승인 대상으로 남긴다. 일반 세션을 Bot Mode로 위장하거나 비밀을 읽어 우회하지 않는다.
 
 ## 검증 순서
 
-1. 현재 초기 구성: syntax와 module registration 계약 테스트.
-2. 기능 구현 승인 후: route별 cache, 실패 격리, 중복 ID 회귀 테스트.
-3. 격리 Desktop에서 실제 탭·분할·포커스·draft 보존·재연결 검증.
+1. 초기 scaffold 검증은 bootstrap에서 완료되었다. 이후 변경한 구현은 별도 검증자가 syntax와 module registration 계약 테스트를 다시 실행한다.
+2. 승인된 feature worktree 개발: route별 cache, 실패 격리, profile/targetProfile 매핑, 중복 ID 차단 회귀 테스트.
+3. 별도 실행 승인 후 격리 Desktop에서 실제 탭·분할·포커스·draft 보존·재연결 검증.
 4. 대상과 내용을 승인받은 실제 머신 입력·스트림·승인 라우팅 검증.
 5. 실사용 설치·활성화는 별도 승인.
 
